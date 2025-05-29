@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="real-stories">
+    <h2>Real Impact Stories</h2>
+    <div class="story-card-container">
+        {% for story in stories %}
+        <div class="story-card fade-in">
+            <img src="{{ url_for('static', filename='images/stories/' ~ story.image_filename) }}" alt="{{ story.title }}">
+
+            <h3>{{ story.title }}</h3>m
+            <p>{{ story.summary }}</p>
+            <a href="{{ url_for('main.story_detail', story_id=story.id) }}" class="read-more">Read More</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="back-to-home">
+    <a href="{{ url_for('main.home') }}#featured" class="back-button">
+        ⬅️ Back to Home
+    </a>
+
+    </div>
+
+</section>
+{% endblock %}

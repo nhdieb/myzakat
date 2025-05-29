@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="story-detail fade-in">
+    <div class="story-header">
+        <h2>{{ story.title }}</h2>
+        <img src="{{ url_for('static', filename='images/stories/' ~ story.image_filename) }}" alt="{{ story.title }}">
+
+    </div>
+    <div class="story-content">
+        <p>{{ story.content }}</p>
+        <a href="{{ url_for('main.stories') }}" class="back-button"><i class="fas fa-arrow-left"></i> Back to Stories</a>
+    </div>
+</section>
+{% endblock %}

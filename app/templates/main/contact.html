@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="contact-container">
+    <h2>Contact Us</h2>
+    <p>
+        We’d love to hear from you! Whether you have questions about our work, want to learn more about how your
+        contributions are making a difference, or need assistance, feel free to reach out to us.
+    </p>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- 🔹 Contact Form Section -->
+    <section class="contact-section">
+        <h3>Get in Touch</h3>
+        <form action="/submit-contact" method="POST" class="contact-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Your Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Your Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+            </div>
+
+            <label for="message">Your Message:</label>
+            <textarea id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
+
+            <button type="submit" class="submit-button">Send Message</button>
+        </form>
+    </section>
+
+    <!-- 🔹 Contact Info Section -->
+    <section class="contact-section">
+        <h3>Our Office</h3>
+        <div class="contact-info">
+            <p><strong>Zakat Distribution Foundation</strong></p>
+            <p>123 Charity Lane<br>Alexandria, VA, USA</p>
+            <p>Email: <a href="mailto:info@myzakat.org">info@myzakat.org</a></p>
+            <p>Phone: +1 (555) 123-4567</p>
+        </div>
+    </section>
+</div>
+{% endblock %}

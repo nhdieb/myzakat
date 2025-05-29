@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="press-detail-page fade-in">
+  <div class="press-box">
+    <h2>{{ press.title }}</h2>
+    <p class="press-date">{{ press.date_posted.strftime('%B %d, %Y') }}</p>
+    <img src="{{ url_for('static', filename='images/press/' + press.image_filename) }}" alt="{{ press.title }}">
+    <p>{{ press.content }}</p>
+  </div>
+
+  <div class="back-to-press">
+    <a href="{{ url_for('main.press') }}" class="back-button">⬅️ Back to All Press Releases</a>
+  </div>
+</section>
+{% endblock %}

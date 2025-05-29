@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - MyZakat{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <h2>About Us</h2>
+    <p>Learn more about our mission and how we impact lives around the world.</p>
+
+    <!-- 🔹 Our Mission Section -->
+    <section class="about-section">
+        <div class="about-text">
+            <h3>Our Mission</h3>
+            <p>
+                The Zakat Distribution Foundation (ZDF) is dedicated to alleviating poverty, aiding those in distress,
+                and empowering communities through Zakat and Sadaqa contributions. Established with the mission to serve
+                humanity, we ensure that your donations are effectively utilized to bring hope and relief to the most
+                vulnerable individuals worldwide.  It is our mission to help the poor, the needy, the orphaned, victims of violence and wars, refugees,
+                people affected by natural disasters and pandemics, and the deprived across the world. Through the
+                help of Muslims across the world with their Zakat duties and Volunteer Sadaqa from any caring individual,
+                we will effectively deliver assistance to all who need our help.
+            </p>
+        </div>
+        <div class="about-image">
+            <img src="{{ url_for('static', filename='images/mission.jpg') }}" alt="Our Mission">
+        </div>
+    </section>
+
+    <!-- 🔹 Our Vision Section -->
+    <section class="about-section reverse">
+        <div class="about-image">
+            <img src="{{ url_for('static', filename='images/vision.jpg') }}" alt="Our Vision">
+        </div>
+        <div class="about-text">
+            <h3>Our Methods</h3>
+            <p>To create a world where no one is left in poverty.  We believe in providing assistance to all the needy of the world. No one should 
+            be hungry or thirsty, no one should live without shelter, and no one should suffer while others live comfortably.</p>
+        </div>
+    </section>
+
+     <!-- 🔹 Our methods Section -->
+     <section class="about-section reverse">
+        <div class="about-image">
+            <img src="{{ url_for('static', filename='images/vision.jpg') }}" alt="Our Vision">
+        </div>
+        <div class="about-text">
+            <h3>Our Methods</h3>
+            <p>T Our Zakat Calculator will help you pay your yearly Zakat duty with 
+                accuracy based on Islamic laws of Zakat. Money received whether as a 
+                Zakat duty or a charity from any individual (Muslim or non-Muslim) will 
+                be effectively distributed to the needy.</p>
+        </div>
+    </section>
+
+    <!-- 🔹 Why Choose Us -->
+    <section class="about-section">
+        <div class="about-text">
+            <h3>Why Choose ZDF?</h3>
+            <ul>
+                <li>✔ 100% Transparent Fund Allocation</li>
+                <li>✔ Global Outreach to Needy Communities</li>
+                <li>✔ Secure & Trusted Zakat Processing</li>
+                <li>✔ Dedicated to Islamic Philanthropy</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 🔹 Call to Action -->
+    <section class="cta">
+        <div class="cta-text">
+            <h3>Join Us in Making a Difference</h3>
+            <p>Your Zakat has the power to change lives. Be a part of this mission today!</p>
+            <a href="{{ url_for('main.donate') }}" class="button">Donate Now</a>
+        </div>
+    </section>
+</div>
+{% endblock %}

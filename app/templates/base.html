@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{{ title | default("Zakat Distribution Foundation") }}</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+
+</head>
+
+<body>
+    <!-- 🔹 Urgent Message Banner -->
+    <div class="urgent-banner">
+        <div class="urgent-content">
+            🚨 Emergency Relief Needed: Support families affected by the crisis. 
+            <a href="{{ url_for('main.donate') }}">Donate Now</a>
+        </div>
+        <button id="darkModeToggle" class="dark-toggle-btn">🌙</button>
+    </div>
+    
+    
+
+    <header class="header">
+        <div class="logo-nav-container">
+            <div class="logo-header-container">
+                <a href="{{ url_for('main.home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Zakat Distribution Foundation Logo">
+                </a>
+                <h1>Zakat Distribution Foundation</h1>
+            </div>
+
+            <nav class="navbar">
+                <a href="{{ url_for('main.home') }}">Home</a>
+                <a href="{{ url_for('main.about') }}">About</a>
+                <a href="{{ url_for('main.donate') }}">Donate</a>
+                <a href="{{ url_for('main.contact') }}">Contact</a>
+                <a href="{{ url_for('main.zakat_calculator') }}">Zakat Calculator</a>
+                <a href="{{ url_for('main.zakat_education') }}">Zakat Education</a>
+                
+
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('admin.admin_dashboard') }}">Admin</a>
+                    <a href="{{ url_for('auth.logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">Login</a>
+                {% endif %}
+                
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2024 Zakat Distribution Foundation. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+<script>
+    // Load user's theme preference from localStorage
+    if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+
+    document.getElementById("darkModeToggle").addEventListener("click", function () {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const fadeEls = document.querySelectorAll(".fade-in");
+    
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+    
+        fadeEls.forEach(el => observer.observe(el));
+    });
+    </script>
+    
+
+</html>
