@@ -388,20 +388,20 @@ def add_story():
         title = request.form["title"]
         summary = request.form["summary"]
         content = request.form["content"]
-        image_file = request.files["image"]
+        is_active = "is_active" in request.form
+        is_featured = "is_featured" in request.form
+        video_url = request.form.get("video_url", "").strip() or None
 
+        image_file = request.files["image"]
         filename = None
         if image_file and image_file.filename:
             filename = secure_filename(image_file.filename)
             image_folder = os.path.join(
                 current_app.root_path, "static", "images", "stories"
             )
-            os.makedirs(image_folder, exist_ok=True)  # ✅ Ensure folder exists
+            os.makedirs(image_folder, exist_ok=True)
             image_path = os.path.join(image_folder, filename)
-
             image_file.save(image_path)
-        is_active = "is_active" in request.form
-        is_featured = "is_featured" in request.form
 
         new_story = Story(
             title=title,
@@ -410,8 +410,8 @@ def add_story():
             image_filename=filename,
             is_active=is_active,
             is_featured=is_featured,
+            video_url=video_url,
         )
-
         db.session.add(new_story)
         db.session.commit()
         # flash('Story added successfully.', 'success')
@@ -429,11 +429,11 @@ def edit_story(story_id):
         story.title = request.form["title"]
         story.summary = request.form["summary"]
         story.content = request.form["content"]
-
         is_active = "is_active" in request.form
         is_featured = "is_featured" in request.form
         story.is_active = is_active
         story.is_featured = is_featured
+        story.video_url = request.form.get("video_url", "").strip() or None
 
         image_file = request.files["image"]
         if image_file and image_file.filename:

@@ -70,6 +70,7 @@ class Story(db.Model):
     summary = db.Column(db.Text, nullable=False)
     content = db.Column(db.Text, nullable=False)
     image_filename = db.Column(db.String(200))
+    video_url = db.Column(db.String(255))  # optional, for story video
     is_active = db.Column(db.Boolean, default=True)  # ← NEW
     is_featured = db.Column(db.Boolean, default=False)  # ← NEW
 

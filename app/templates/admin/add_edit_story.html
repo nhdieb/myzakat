@@ -32,6 +32,9 @@
 
         {% endif %}
 
+        <label for="video_url">Video (filename or link, optional):</label>
+        <input type="text" name="video_url" id="video_url" value="{{ story.video_url if story else '' }}" placeholder="e.g. videos/story1.mp4 or https://..." class="form-control">
+
         <button type="submit" class="admin-button">{{ action }} Story</button>
         <a href="{{ url_for('admin.manage_stories') }}" class="btn-back">⬅️ Cancel</a>
     </form>

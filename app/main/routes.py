@@ -13,14 +13,7 @@ from sqlalchemy import func
 from datetime import datetime
 
 from app import db, mail
-from app.models import (
-    ContactSubmission,
-    Donation,
-    Event,
-    Story,
-    PressRelease,
-    Testimonial,
-)
+from app.models import ContactSubmission, Donation, Event, Story, PressRelease
 
 
 from . import main_bp  # ✅ import the blueprint from this folder
@@ -30,23 +23,6 @@ from . import main_bp  # ✅ import the blueprint from this folder
 
 @main_bp.route("/")
 def home():
-    # Query only approved testimonials (fix field name)
-    approved = Testimonial.query.filter_by(is_approved=True).all()
-    testimonial_slides = []
-    for t in approved:
-        testimonial_slides.append(
-            {
-                "image": (
-                    url_for("static", filename=t.image)
-                    if t.image
-                    else url_for("static", filename="images/default_user.png")
-                ),
-                "alt": t.name or "Testimonial",
-                "text": t.text,
-            }
-        )
-
-    # Get total donations and Ramadan donations
     total_donations = db.session.query(func.sum(Donation.amount)).scalar() or 0
     total_ramadan_donations = (
         db.session.query(func.sum(Donation.amount))
@@ -55,51 +31,81 @@ def home():
         or 0
     )
 
-    # Get unit costs from config
-    meal_cost = current_app.config.get("MEAL_COST", 5)
-    family_cost = current_app.config.get("FAMILY_COST", 100)
-    orphan_cost = current_app.config.get("ORPHAN_COST", 100)
-
-    # Calculate budgets and quantities
     meals_budget = total_donations * 0.20
     families_budget = total_donations * 0.50
     orphans_budget = total_donations * 0.30
+
+    # Unit costs
+    meal_cost = 5
+    family_cost = 100
+    orphan_cost = 100
+    total_ramadan_donations = 50000
+
+    # Quantities
     meals = int(meals_budget // meal_cost)
     families = int(families_budget // family_cost)
     orphans = int(orphans_budget // orphan_cost)
 
-    # Get latest events, press releases, and stories
-    events = Event.query.order_by(Event.date.desc()).limit(3).all()
+    events = Event.query.order_by(Event.date.desc()).limit(3).all()  # optional limit
+
     press_releases = (
         PressRelease.query.order_by(PressRelease.date_posted.desc()).limit(3).all()
     )
-    stories = (
-        Story.query.filter_by(is_active=True)
-        .order_by(Story.is_featured.desc(), Story.id.desc())
+
+    featured_stories = (
+        Story.query.filter_by(is_active=True, is_featured=True)
+        .order_by(Story.id.desc())
         .limit(5)
         .all()
     )
 
-    # Prepare story slides for carousel
-    story_slides = [
-        {
-            "image": url_for("static", filename="images/stories/" + s.image_filename),
-            "alt": s.title,
-            "text": f"{s.title}: {s.summary[:100]}...",
-        }
-        for s in stories
-    ]
+    if not featured_stories:
+        fallback_stories = (
+            Story.query.filter_by(is_active=True)
+            .order_by(Story.id.desc())
+            .limit(5)
+            .all()
+        )
+        story_slides = [
+            {
+                "image": url_for(
+                    "static", filename="images/stories/" + s.image_filename
+                ),
+                "alt": s.title,
+                "text": s.title + ": " + s.summary[:100] + "...",
+            }
+            for s in fallback_stories
+        ]
+    else:
+        story_slides = [
+            {
+                "image": url_for(
+                    "static", filename="images/stories/" + s.image_filename
+                ),
+                "alt": s.title,
+                "text": s.title + ": " + s.summary[:100] + "...",
+            }
+            for s in featured_stories
+        ]
 
     now = datetime.utcnow()
+
     recent_donations = (
         Donation.query.order_by(Donation.donated_at.desc()).limit(5).all()
     )
-    testimonials = (
-        Testimonial.query.filter_by(is_approved=True)
-        .order_by(Testimonial.created_at.desc())
-        .limit(3)
-        .all()
-    )
+
+    testimonials = []
+    try:
+        from app.models import Testimonial
+
+        testimonials = (
+            Testimonial.query.filter_by(is_approved=True)
+            .order_by(Testimonial.created_at.desc())
+            .limit(3)
+            .all()
+        )
+    except Exception:
+        pass
 
     return render_template(
         "main/home.html",
@@ -111,10 +117,9 @@ def home():
         events=events,
         press_releases=press_releases,
         story_slides=story_slides,
-        recent_donations=recent_donations,
         now=now,
+        recent_donations=recent_donations,
         testimonials=testimonials,
-        testimonial_slides=testimonial_slides,  # pass to template
     )
 
 
@@ -336,54 +341,47 @@ def volunteer_confirmation():
     return render_template("main/volunteer_confirmation.html", name=name)
 
 
-@main_bp.route("/testimonials")
-def testimonials():
-    testimonials = (
-        Testimonial.query.filter_by(is_approved=True)
-        .order_by(Testimonial.created_at.desc())
-        .all()
-    )
-    return render_template("main/testimonials.html", testimonials=testimonials)
-
-
-from .forms import TestimonialForm
-
-
 @main_bp.route("/submit-testimonial", methods=["GET", "POST"])
 def submit_testimonial():
+    from app.models import Testimonial
+    from app.main.forms import TestimonialForm
+
     form = TestimonialForm()
     if form.validate_on_submit():
-        # Handle image upload if provided
         image_filename = None
+        video_url = form.video_url.data.strip() if form.video_url.data else None
+
+        # Handle image upload
         if form.image.data:
+            image = form.image.data
+            if image.filename:
+                from werkzeug.utils import secure_filename
+                import os
+
+                filename = secure_filename(image.filename)
+                image_folder = os.path.join(
+                    current_app.root_path, "static", "images", "testimonials"
+                )
+                os.makedirs(image_folder, exist_ok=True)
+                image_path = os.path.join(image_folder, filename)
+                image.save(image_path)
+                image_filename = f"images/testimonials/{filename}"
+
+        # Handle video upload (optional, if you want to support direct mp4 upload)
+        if "video" in request.files and request.files["video"].filename:
+            video = request.files["video"]
             from werkzeug.utils import secure_filename
             import os
 
-            image_file = form.image.data
-            filename = secure_filename(image_file.filename)
-            image_folder = os.path.join(
-                current_app.root_path, "static", "images", "testimonials"
-            )
-            os.makedirs(image_folder, exist_ok=True)
-            image_path = os.path.join(image_folder, filename)
-            image_file.save(image_path)
-            image_filename = f"images/testimonials/{filename}"
-        video_url = None
-        if form.video_url.data and form.video_url.data.strip():
-            video_url = form.video_url.data.strip()
-        elif "video" in request.files and request.files["video"].filename:
-            from werkzeug.utils import secure_filename
-            import os
-
-            video_file = request.files["video"]
-            video_filename = secure_filename(video_file.filename)
+            video_filename = secure_filename(video.filename)
             video_folder = os.path.join(
-                current_app.root_path, "static", "images", "testimonials"
+                current_app.root_path, "static", "videos", "testimonials"
             )
             os.makedirs(video_folder, exist_ok=True)
             video_path = os.path.join(video_folder, video_filename)
-            video_file.save(video_path)
-            video_url = f"images/testimonials/{video_filename}"
+            video.save(video_path)
+            video_url = f"videos/testimonials/{video_filename}"
+
         testimonial = Testimonial(
             name=form.name.data,
             country=form.country.data,
@@ -397,8 +395,8 @@ def submit_testimonial():
         db.session.add(testimonial)
         db.session.commit()
         flash(
-            "Thank you for your testimonial! It will be reviewed by our team.",
+            "Thank you for sharing your story! Your testimonial will be reviewed soon.",
             "success",
         )
-        return redirect(url_for("main.testimonials"))
+        return redirect(url_for("main.home"))
     return render_template("main/submit_testimonial.html", form=form)

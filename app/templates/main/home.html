@@ -58,6 +58,32 @@
 <!-- 🔹 Separator -->
 <div class="gradient-section slim"></div>
 
+<!-- 🔹 How It Works Section -->
+<section class="how-it-works-section fade-in">
+  <h2 class="section-title"><span class="section-icon"><i class="fas fa-cogs"></i></span>How It Works</h2>
+  <div class="how-it-works-steps">
+    <div class="how-step">
+      <div class="how-icon"><i class="fas fa-hand-holding-usd"></i></div>
+      <h3>1. You Donate</h3>
+      <p>Choose your cause and make a secure Zakat or Sadaqa donation online.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-icon"><i class="fas fa-people-carry"></i></div>
+      <h3>2. We Deliver</h3>
+      <p>Our team ensures your donation reaches those most in need, quickly and transparently.</p>
+    </div>
+    <div class="how-step">
+      <div class="how-icon"><i class="fas fa-smile-beam"></i></div>
+      <h3>3. Lives Change</h3>
+      <p>Your generosity provides food, water, education, and hope to families and children.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 🔹 Separator -->
+<div class="gradient-section slim"></div>
+
+
 <!-- Impact Section (Original, reverted) -->
 <section class="impact-section fade-in">
     <h2 class="section-title"><span class="section-icon"><i class="fas fa-hands-helping"></i></span>The Impact of Your Zakat</h2>
@@ -119,8 +145,11 @@
 <div class="testimonials-cards-container">
   {% for t in testimonials %}
     <div class="testimonial-card fade-in">
-      <div class="testimonial-img-oval">
+      <div class="testimonial-img-oval testimonial-video-thumb" {% if t.video_url %}data-video="{{ url_for('static', filename=t.video_url) }}" tabindex="0" role="button" aria-label="Play testimonial video for {{ t.name }}"{% endif %}>
         <img src="{{ url_for('static', filename=t.image) if t.image else url_for('static', filename='images/default_user.png') }}" alt="{{ t.name }}">
+        {% if t.video_url %}
+          <span class="video-play-overlay"><i class="fas fa-play-circle"></i></span>
+        {% endif %}
       </div>
       <div class="testimonial-text">{{ t.text }}</div>
       <div class="testimonial-name">{{ t.name }}</div>
@@ -130,6 +159,20 @@
 <div style="text-align:center;margin-top:18px;">
   <a href="{{ url_for('main.submit_testimonial') }}" class="button">Share Your Story</a>
 </div>
+
+<!-- Testimonial Video Modal -->
+<div id="testimonialVideoModal" class="video-modal" tabindex="-1" aria-modal="true" role="dialog" style="display:none;">
+  <div class="video-modal-content">
+    <span class="video-modal-close" tabindex="0" aria-label="Close video">&times;</span>
+    <video id="testimonialVideoPlayer" controls style="max-width:100%;max-height:70vh;outline:none;">
+      <source src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<!-- Story Video Modal (reuse testimonial modal for simplicity) -->
+<!-- No duplicate modal needed, just use the same one for both -->
 
 <div class="gradient-section slim"></div>
 
@@ -467,6 +510,13 @@
 
 
 
+<!-- 🔹 Sticky CTA Banner -->
+<div class="sticky-cta-banner" role="region" aria-label="Call to Action">
+    <span class="cta-banner-text"><i class="fas fa-donate"></i> Make an Impact — Your Zakat Changes Lives!</span>
+    <a href="{{ url_for('main.donate') }}" class="cta-banner-button">Donate Now</a>
+</div>
+
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const counters = document.querySelectorAll(".counter");
@@ -557,5 +607,78 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Testimonial and Story video modal logic
+  const modal = document.getElementById('testimonialVideoModal');
+  const video = document.getElementById('testimonialVideoPlayer');
+  const closeBtn = document.querySelector('.video-modal-close');
+
+  // For testimonial videos
+  document.querySelectorAll('.testimonial-video-thumb[data-video]').forEach(el => {
+    el.addEventListener('click', function() {
+      video.querySelector('source').src = this.getAttribute('data-video');
+      video.load();
+      modal.style.display = 'flex';
+      video.focus();
+    });
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+
+  // For story videos in carousel
+  document.querySelectorAll('.story-video-thumb[data-video]').forEach(el => {
+    el.addEventListener('click', function() {
+      const videoUrl = this.getAttribute('data-video');
+      video.querySelector('source').src = videoUrl;
+      video.src = videoUrl;
+      video.load();
+      modal.style.display = 'flex';
+      setTimeout(() => { video.play(); }, 100);
+      video.focus();
+    });
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+
+  closeBtn.addEventListener('click', function() {
+    modal.style.display = 'none';
+    video.pause();
+    video.currentTime = 0;
+    video.src = '';
+    video.querySelector('source').src = '';
+    video.load();
+  });
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+      video.pause();
+      video.currentTime = 0;
+      video.src = '';
+      video.querySelector('source').src = '';
+      video.load();
+    }
+  });
+  document.addEventListener('keydown', function(e) {
+    if (modal.style.display === 'flex' && (e.key === 'Escape' || e.key === 'Esc')) {
+      modal.style.display = 'none';
+      video.pause();
+      video.currentTime = 0;
+      video.src = '';
+      video.querySelector('source').src = '';
+      video.load();
+    }
+  });
+});
+</script>
 
 {% endblock %}
