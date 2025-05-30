@@ -10,31 +10,6 @@ button {
     border-radius: 5px;
 }
 
-/* === Admin Donations Form === */
-.search-filter-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.search-filter-form input,
-.search-filter-form select {
-    width: 250px;
-}
-
-.search-filter-form button {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-}
-
-.search-filter-form button:hover {
-    background-color: #0056b3;
-}
-
 /* === Zakat Calculator Form === */
 .zakat-form {
     width: 80%;
@@ -42,7 +17,8 @@ button {
     padding: 30px;
     background: white;
     border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 30px auto;
 }
 
 .form-row {
@@ -132,6 +108,8 @@ button[type="submit"]:hover {
     background-color: #28a745;
     color: white;
     padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
     font-size: 1.2rem;
     font-weight: bold;
     border-radius: 8px;
@@ -178,7 +156,13 @@ button[type="submit"]:hover {
 }
 
 .newsletter-form input {
-    width: 70%;
+    width: 100%;
+    padding: 14px 25px;
+}
+
+.newsletter-form button {
+    width: 100%;
+    padding: 14px 25px;
 }
 
 .subscribe-button {
@@ -220,6 +204,7 @@ button[type="submit"]:hover {
 
     .newsletter-form {
         flex-direction: column;
+        gap: 10px;
     }
 
     .search-filter-form input,
@@ -227,13 +212,6 @@ button[type="submit"]:hover {
     .search-filter-form button,
     .newsletter-form input,
     .newsletter-form button {
-        width: 100%;
-    }
-
-    button[type="submit"],
-    .submit-button,
-    .donate-button,
-    .subscribe-button {
         width: 100%;
         padding: 14px 25px;
     }

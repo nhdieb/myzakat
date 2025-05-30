@@ -1,0 +1,49 @@
+/* Shared section styles for all major sections (titles, subtitles, cards, containers, etc.) */
+.section-title {
+    color: #0056b3;
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.section-subtitle {
+    color: #555;
+    text-align: center;
+    font-size: 1.2rem;
+    margin-top: -10px;
+    margin-bottom: 30px;
+    font-style: italic;
+}
+
+.section-container {
+    padding: 50px 20px;
+    background-color: #f7f7f7;
+    text-align: center;
+}
+
+.card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 18px;
+}
+
+.card-grid {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+    .card-grid {
+        gap: 18px;
+    }
+
+    .card {
+        max-width: 98vw;
+        min-width: 180px;
+        padding: 18px 8px 12px 8px;
+    }
+}

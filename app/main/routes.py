@@ -400,3 +400,29 @@ def submit_testimonial():
         )
         return redirect(url_for("main.home"))
     return render_template("main/submit_testimonial.html", form=form)
+
+
+@main_bp.route("/programs/<program_slug>")
+def program_detail(program_slug):
+    # Example program data; in production, fetch from DB or config
+    programs = {
+        "food-water-aid": {
+            "title": "Food & Water Aid",
+            "image": "images/program1.jpg",
+            "description": "Our Food & Water Aid program delivers essential food parcels and clean water to families in crisis zones. Your support helps us reach the most vulnerable with life-saving resources.",
+        },
+        "emergency-relief": {
+            "title": "Emergency Relief",
+            "image": "images/program2.jpg",
+            "description": "Our Emergency Relief program provides rapid response for victims of war, disaster, and displacement, offering shelter, supplies, and hope in times of crisis.",
+        },
+        "orphan-child-care": {
+            "title": "Orphan & Child Care",
+            "image": "images/program3.jpg",
+            "description": "Our Orphan & Child Care program provides education, safety, and hope for orphaned and vulnerable children, ensuring a brighter future for every child.",
+        },
+    }
+    program = programs.get(program_slug)
+    if not program:
+        return render_template("main/404.html"), 404
+    return render_template("main/program_detail.html", program=program)
